@@ -52,6 +52,12 @@ default.size.stdout \
 OBJDUMP_LIST += \
 Vision_Drive_ADAS.list \
 
+OBJCOPY_HEX += \
+Vision_Drive_ADAS.hex \
+
+OBJCOPY_BIN += \
+Vision_Drive_ADAS.bin \
+
 
 # All Target
 all:
@@ -76,16 +82,26 @@ Vision_Drive_ADAS.list: $(EXECUTABLES) makefile objects.list $(OPTIONAL_TOOL_DEP
 	@echo 'Finished building: $@'
 	@echo ' '
 
+Vision_Drive_ADAS.hex: $(EXECUTABLES) makefile objects.list $(OPTIONAL_TOOL_DEPS)
+	arm-none-eabi-objcopy  -O ihex $(EXECUTABLES) "Vision_Drive_ADAS.hex"
+	@echo 'Finished building: $@'
+	@echo ' '
+
+Vision_Drive_ADAS.bin: $(EXECUTABLES) makefile objects.list $(OPTIONAL_TOOL_DEPS)
+	arm-none-eabi-objcopy  -O binary $(EXECUTABLES) "Vision_Drive_ADAS.bin"
+	@echo 'Finished building: $@'
+	@echo ' '
+
 # Other Targets
 clean:
-	-$(RM) Vision_Drive_ADAS.elf Vision_Drive_ADAS.list Vision_Drive_ADAS.map default.size.stdout
+	-$(RM) Vision_Drive_ADAS.bin Vision_Drive_ADAS.elf Vision_Drive_ADAS.hex Vision_Drive_ADAS.list Vision_Drive_ADAS.map default.size.stdout
 	-@echo ' '
 
 post-build:
 	arm-none-eabi-objcopy -O ihex Vision_Drive_ADAS.elf Vision_Drive_ADAS.hex
 	-@echo ' '
 
-secondary-outputs: $(SIZE_OUTPUT) $(OBJDUMP_LIST)
+secondary-outputs: $(SIZE_OUTPUT) $(OBJDUMP_LIST) $(OBJCOPY_HEX) $(OBJCOPY_BIN)
 
 fail-specified-linker-script-missing:
 	@echo 'Error: Cannot find the specified linker script. Check the linker settings in the build configuration.'
