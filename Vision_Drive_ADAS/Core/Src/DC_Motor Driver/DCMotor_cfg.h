@@ -3,7 +3,7 @@
 * @file    : DC Motor (using H-Bridge) Driver Configuration Header File (HAL)
 * @author  : Alaa Ghita
 * @date    : May 2024
-* @version : 0.1v
+* @version : 1.0v
 * 
 */
 
