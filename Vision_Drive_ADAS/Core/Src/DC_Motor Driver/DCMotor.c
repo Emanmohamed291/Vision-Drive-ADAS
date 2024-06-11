@@ -55,22 +55,22 @@ DCMotorErrorStatus_t DCMotor_Start(uint32_t Copy_u32DCMotor)
     {
     	switch (DCMotors[Copy_u32DCMotor].Enable_Timer)
     	{
-    		case Timer_1:
+    		/*case Timer_1:
     			__HAL_TIM_SET_COMPARE(&htim1,DCMotors[Copy_u32DCMotor].Enable_Channel, Motor_Speed[Copy_u32DCMotor]);
     			HAL_TIM_PWM_Start(&htim1, DCMotors[Copy_u32DCMotor].Enable_Channel);
     			break;
     		case Timer_2:
     		    __HAL_TIM_SET_COMPARE(&htim2,DCMotors[Copy_u32DCMotor].Enable_Channel, Motor_Speed[Copy_u32DCMotor]);
     			HAL_TIM_PWM_Start(&htim2, DCMotors[Copy_u32DCMotor].Enable_Channel);
-    		    break;
+    		    break;*/
     		case Timer_3:
     		    __HAL_TIM_SET_COMPARE(&htim3,DCMotors[Copy_u32DCMotor].Enable_Channel, Motor_Speed[Copy_u32DCMotor]);
     		    HAL_TIM_PWM_Start(&htim3, DCMotors[Copy_u32DCMotor].Enable_Channel);
     		    break;
-    		case Timer_4:
+    		/*case Timer_4:
     		    __HAL_TIM_SET_COMPARE(&htim4,DCMotors[Copy_u32DCMotor].Enable_Channel, Motor_Speed[Copy_u32DCMotor]);
     		    HAL_TIM_PWM_Start(&htim4, DCMotors[Copy_u32DCMotor].Enable_Channel);
-    		    break;
+    		    break;*/
     		default:
     			Ret_ErrorStatus = DCM_ErrorStatus_NotOK;
     	}
@@ -91,18 +91,18 @@ DCMotorErrorStatus_t DCMotor_Stop(uint32_t Copy_u32DCMotor)
     {
     	switch (DCMotors[Copy_u32DCMotor].Enable_Timer)
     	{
-    		case Timer_1:
+    		/*case Timer_1:
     			HAL_TIM_PWM_Stop(&htim1, DCMotors[Copy_u32DCMotor].Enable_Channel);
     			break;
     		case Timer_2:
     			HAL_TIM_PWM_Stop(&htim2, DCMotors[Copy_u32DCMotor].Enable_Channel);
-    		    break;
+    		    break;*/
     		case Timer_3:
     			HAL_TIM_PWM_Stop(&htim3, DCMotors[Copy_u32DCMotor].Enable_Channel);
     		    break;
-    		case Timer_4:
+    		/*case Timer_4:
     			HAL_TIM_PWM_Stop(&htim4, DCMotors[Copy_u32DCMotor].Enable_Channel);
-    		    break;
+    		    break;*/
     		default:
     			Ret_ErrorStatus = DCM_ErrorStatus_NotOK;
     	}
@@ -126,22 +126,22 @@ DCMotorErrorStatus_t DCMotor_StartForward(uint32_t Copy_u32DCMotor)
 
 	    	switch (DCMotors[Copy_u32DCMotor].Enable_Timer)
 	    	{
-	    		case Timer_1:
+	    		/*case Timer_1:
 	    			__HAL_TIM_SET_COMPARE(&htim1,DCMotors[Copy_u32DCMotor].Enable_Channel, Motor_Speed[Copy_u32DCMotor]);
 	    			HAL_TIM_PWM_Start(&htim1, DCMotors[Copy_u32DCMotor].Enable_Channel);
 	    			break;
 	    		case Timer_2:
 	    		    __HAL_TIM_SET_COMPARE(&htim2,DCMotors[Copy_u32DCMotor].Enable_Channel, Motor_Speed[Copy_u32DCMotor]);
 	    			HAL_TIM_PWM_Start(&htim2, DCMotors[Copy_u32DCMotor].Enable_Channel);
-	    		    break;
+	    		    break;*/
 	    		case Timer_3:
 	    		    __HAL_TIM_SET_COMPARE(&htim3,DCMotors[Copy_u32DCMotor].Enable_Channel, Motor_Speed[Copy_u32DCMotor]);
 	    		    HAL_TIM_PWM_Start(&htim3, DCMotors[Copy_u32DCMotor].Enable_Channel);
 	    		    break;
-	    		case Timer_4:
+	    		/*case Timer_4:
 	    		    __HAL_TIM_SET_COMPARE(&htim4,DCMotors[Copy_u32DCMotor].Enable_Channel, Motor_Speed[Copy_u32DCMotor]);
 	    		    HAL_TIM_PWM_Start(&htim4, DCMotors[Copy_u32DCMotor].Enable_Channel);
-	    		    break;
+	    		    break;*/
 	    		default:
 	    			Ret_ErrorStatus = DCM_ErrorStatus_NotOK;
 	    	}
@@ -165,22 +165,22 @@ DCMotorErrorStatus_t DCMotor_StartReverse(uint32_t Copy_u32DCMotor)
 
     	switch (DCMotors[Copy_u32DCMotor].Enable_Timer)
     	{
-    		case Timer_1:
+    		/*case Timer_1:
     			__HAL_TIM_SET_COMPARE(&htim1,DCMotors[Copy_u32DCMotor].Enable_Channel, Motor_Speed[Copy_u32DCMotor]);
     			HAL_TIM_PWM_Start(&htim1, DCMotors[Copy_u32DCMotor].Enable_Channel);
     			break;
     		case Timer_2:
     		    __HAL_TIM_SET_COMPARE(&htim2,DCMotors[Copy_u32DCMotor].Enable_Channel, Motor_Speed[Copy_u32DCMotor]);
     			HAL_TIM_PWM_Start(&htim2, DCMotors[Copy_u32DCMotor].Enable_Channel);
-    		    break;
+    		    break;*/
     		case Timer_3:
     		    __HAL_TIM_SET_COMPARE(&htim3,DCMotors[Copy_u32DCMotor].Enable_Channel, Motor_Speed[Copy_u32DCMotor]);
     		    HAL_TIM_PWM_Start(&htim3, DCMotors[Copy_u32DCMotor].Enable_Channel);
     		    break;
-    		case Timer_4:
+    		/*case Timer_4:
     		    __HAL_TIM_SET_COMPARE(&htim4,DCMotors[Copy_u32DCMotor].Enable_Channel, Motor_Speed[Copy_u32DCMotor]);
     		    HAL_TIM_PWM_Start(&htim4, DCMotors[Copy_u32DCMotor].Enable_Channel);
-    		    break;
+    		    break;*/
     		default:
     			Ret_ErrorStatus = DCM_ErrorStatus_NotOK;
     	}
@@ -201,22 +201,22 @@ DCMotorErrorStatus_t DCMotor_SetSpeed(uint32_t Copy_u32DCMotor, uint32_t Copy_u3
     {
     	switch (DCMotors[Copy_u32DCMotor].Enable_Timer)
     	{
-    		case Timer_1:
+    		/*case Timer_1:
     			Motor_Speed[Copy_u32DCMotor] = (MAX_SPEED*Copy_u32SpeedPercentage)/100;
     			__HAL_TIM_SET_COMPARE(&htim1,DCMotors[Copy_u32DCMotor].Enable_Channel, Motor_Speed[Copy_u32DCMotor]);
     			break;
     		case Timer_2:
     			Motor_Speed[Copy_u32DCMotor] = (MAX_SPEED*Copy_u32SpeedPercentage)/100;
     			__HAL_TIM_SET_COMPARE(&htim2,DCMotors[Copy_u32DCMotor].Enable_Channel, Motor_Speed[Copy_u32DCMotor]);
-    		    break;
+    		    break;*/
     		case Timer_3:
     			Motor_Speed[Copy_u32DCMotor] = (MAX_SPEED*Copy_u32SpeedPercentage)/100;
     			__HAL_TIM_SET_COMPARE(&htim3,DCMotors[Copy_u32DCMotor].Enable_Channel, Motor_Speed[Copy_u32DCMotor]);
     		    break;
-    		case Timer_4:
+    		/*case Timer_4:
     			Motor_Speed[Copy_u32DCMotor] = (MAX_SPEED*Copy_u32SpeedPercentage)/100;
     			__HAL_TIM_SET_COMPARE(&htim4,DCMotors[Copy_u32DCMotor].Enable_Channel, Motor_Speed[Copy_u32DCMotor]);
-    		    break;
+    		    break;*/
     		default:
     			Ret_ErrorStatus = DCM_ErrorStatus_NotOK;
     	}
