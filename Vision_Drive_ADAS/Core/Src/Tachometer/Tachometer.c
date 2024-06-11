@@ -21,11 +21,11 @@
 
 /*Variables*/
 extern TIM_HandleTypeDef htim2;
-uint32_t Counted_Holes = 0;
-uint32_t Speed = 0;
-uint32_t rpm = 0;
-uint32_t count = 0;
-uint32_t Prev_Counted_Holes= 0;
+static uint32_t Counted_Holes = 0;
+static uint32_t Speed = 0;
+static uint32_t rpm = 0;
+static uint32_t count = 0;
+static uint32_t Prev_Counted_Holes= 0;
 /***********/
 
 /*Static Functions Prototypes*/
@@ -62,4 +62,8 @@ void Tahcometer_SpeedCalculate_CallBack(void)
 	}
 }
 
+uint32_t Tachometer_Get_rpm(void)
+{
+	return rpm;
+}
 /*********************/

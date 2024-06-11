@@ -14,6 +14,7 @@
 /*APIs*/
 void Tachometer_Start(void);
 void Tachometer_Stop(void);
+uint32_t Tachometer_Get_rpm(void);
 /*****/
 
 #endif  /*_TACHOMETER_H_*/
