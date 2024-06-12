@@ -96,6 +96,7 @@ int main(void)
   MX_GPIO_Init();
   MX_USART1_UART_Init();
   MX_TIM3_Init();
+  MX_TIM2_Init();
   /* USER CODE BEGIN 2 */
 //  TIM2->CCR2 = 1500;
 //  HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_2);
