@@ -24,7 +24,7 @@
 
 /* USER CODE END 0 */
 
-TIM_HandleTypeDef htim2;
+//TIM_HandleTypeDef htim2;
 TIM_HandleTypeDef htim3;
 
 /* TIM2 init function */
