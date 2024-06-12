@@ -15,13 +15,19 @@
 /**********/
 
 /*Defines*/
+//typedef unsigned long			uint32_t;
+#define USED			0x0001UL
+#define NOT_USED		0x0000UL
+
 /*********/
 
 /*Types*/
+
+/*
 typedef unsigned char        uint8_t;
 typedef unsigned long        uint32_t;
 typedef unsigned short       uint16_t;
-
+*/
 
 typedef struct
 {
