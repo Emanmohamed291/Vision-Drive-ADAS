@@ -105,11 +105,7 @@ void drive_task(void)
 		switch(CarInfo.DriverInput)
 		{
 		case idle:
-			if(steer_counter > 0)
-			{
-				steer_counter = 0;
-				DCMotor_Stop(STEERING_MOTOR);
-			}
+
 			break;
 
 		case forward:

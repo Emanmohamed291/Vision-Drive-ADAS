@@ -1,5 +1,0 @@
-../Core/Src/HAL/DCMotor.c:47:22:DCMotor_Start	6
-../Core/Src/HAL/DCMotor.c:83:22:DCMotor_Stop	3
-../Core/Src/HAL/DCMotor.c:115:22:DCMotor_StartForward	6
-../Core/Src/HAL/DCMotor.c:153:22:DCMotor_StartReverse	6
-../Core/Src/HAL/DCMotor.c:193:22:DCMotor_SetSpeed	6
