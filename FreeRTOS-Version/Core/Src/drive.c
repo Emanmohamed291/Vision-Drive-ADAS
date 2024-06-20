@@ -53,6 +53,10 @@ typedef enum
 	backward 	= 'B',
 	steer_right = 'R',
 	steer_left	= 'L',
+	fwd_left	= 'G',
+	fwd_right   = 'I',
+	back_left   = 'H',
+	back_right	= 'J',
 	speed_0     = '0',
 	speed_10    = '1',
 	speed_20    = '2',
@@ -105,7 +109,6 @@ void drive_task(void)
 		switch(CarInfo.DriverInput)
 		{
 		case idle:
-
 			break;
 
 		case forward:
@@ -129,13 +132,13 @@ void drive_task(void)
 
 		case steer_right:
 			DCMotor_StartReverse(STEERING_MOTOR);
-			steer_counter++;
+			//steer_counter++;
 			CarInfo.DriverInput=idle;
 			break;
 
 		case steer_left:
 			DCMotor_Start(STEERING_MOTOR);
-			steer_counter++;
+			//steer_counter++;
 			CarInfo.DriverInput=idle;
 			break;
 
@@ -156,6 +159,11 @@ void drive_task(void)
 //			CarInfo.DriverInput += 10;
 //			if(CarInfo.DriverInput >= 100) CarInfo.DriverInput %= 100;
 			break;
+
+		case fwd_left:  DCMotor_StartReverse(DRIVING_MOTOR); DCMotor_Start(DRIVING_MOTOR); 	 	  break;
+		case fwd_right: DCMotor_Start(DRIVING_MOTOR); 		 DCMotor_Start(DRIVING_MOTOR); 		  break;
+		case back_left: DCMotor_StartReverse(DRIVING_MOTOR); DCMotor_StartReverse(DRIVING_MOTOR); break;
+		case back_right:DCMotor_Start(DRIVING_MOTOR); 		 DCMotor_StartReverse(DRIVING_MOTOR); break;
 
 		case stop:
 			DCMotor_Stop(DRIVING_MOTOR);
