@@ -30,7 +30,7 @@
 #define TRIG1_PIN GPIO_PIN_15
 #define TRIG1_PORT GPIOA
 
-TIM_HandleTypeDef htim2;
+extern TIM_HandleTypeDef htim2;
 
 //int32_t IC_Val1 = 0;
 //uint32_t IC_Val2 = 0;
@@ -39,7 +39,11 @@ TIM_HandleTypeDef htim2;
 //
 //uint8_t Distance1  = 0;
 //uint8_t Distance2  = 0;
+static uint8_t Is_First_Captured_CH1 = 0; // flag for channel 1 first capture
+static uint32_t IC_Val1_CH1 = 0, IC_Val2_CH1 = 0, Difference_CH1 = 0;
 float Distance_CH1 = 0.0f;
+static uint8_t Is_First_Captured_CH2 = 0; // flag for channel 1 first capture
+static uint32_t IC_Val1_CH2 = 0, IC_Val2_CH2 = 0, Difference_CH2 = 0;
 float Distance_CH2 = 0.0f;
 
 typedef enum
@@ -177,7 +181,7 @@ void HCSR04_1_Read_task(void * pvParameters)
 	while(1)
 	{
 		HAL_GPIO_WritePin(TRIG1_PORT, TRIG1_PIN, GPIO_PIN_SET);  // pull the TRIG pin HIGH
-		vTaskDelay(pdMS_TO_TICKS(10));  // wait for 10 us
+		vTaskDelay(pdMS_TO_TICKS(1));  // wait for 10 us
 		HAL_GPIO_WritePin(TRIG1_PORT, TRIG1_PIN, GPIO_PIN_RESET);  // pull the TRIG pin low
 
 		__HAL_TIM_ENABLE_IT(&htim2, TIM_IT_CC1);
@@ -191,7 +195,7 @@ void HCSR04_2_Read_task(void * pvParameters)
 	while(1)
 	{
 		HAL_GPIO_WritePin(TRIG2_PORT, TRIG2_PIN, GPIO_PIN_SET);  // pull the TRIG pin HIGH
-		vTaskDelay(pdMS_TO_TICKS(10));  // wait for 10 us
+		vTaskDelay(pdMS_TO_TICKS(1));  // wait for 10 us
 		HAL_GPIO_WritePin(TRIG2_PORT, TRIG2_PIN, GPIO_PIN_RESET);  // pull the TRIG pin low
 
 		__HAL_TIM_ENABLE_IT(&htim2, TIM_IT_CC1);
@@ -207,17 +211,21 @@ void blind_spot_task(void * pvParameters)
 	{
 		if(Distance_CH1 >10){
 		//  HAL_GPIO_WritePin(LED1_GPIO_Port, LED1_Pin, GPIO_PIN_SET);
+		//	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_SET);
 		}
 		else{
+		//	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_RESET);
 		//  HAL_GPIO_WritePin(LED1_GPIO_Port, LED1_Pin, GPIO_PIN_RESET);
 		}
 		if(Distance_CH2 >10){
-		//  HAL_GPIO_WritePin(LED1_GPIO_Port, LED1_Pin, GPIO_PIN_SET);
+			//  HAL_GPIO_WritePin(LED1_GPIO_Port, LED1_Pin, GPIO_PIN_SET);
+			HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_SET);
 		}
 		else{
+			HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_RESET);
 		//  HAL_GPIO_WritePin(LED1_GPIO_Port, LED1_Pin, GPIO_PIN_RESET);
 		}
-		vTaskDelay(pdMS_TO_TICKS(1000));
+		vTaskDelay(pdMS_TO_TICKS(120));
 	}
 }
 
@@ -229,8 +237,8 @@ void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim)
 	// Channel 1 handling
 	if (htim->Channel == HAL_TIM_ACTIVE_CHANNEL_1)  // if the interrupt source is channel1
 	{
-		static uint8_t Is_First_Captured_CH1 = 0; // flag for channel 1 first capture
-		static uint32_t IC_Val1_CH1 = 0, IC_Val2_CH1 = 0, Difference_CH1 = 0;
+//		static uint8_t Is_First_Captured_CH1 = 0; // flag for channel 1 first capture
+//		static uint32_t IC_Val1_CH1 = 0, IC_Val2_CH1 = 0, Difference_CH1 = 0;
 
 
 		if (Is_First_Captured_CH1 == 0) // if the first value is not captured
@@ -266,8 +274,8 @@ void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim)
 	// Channel 2 handling
 	if (htim->Channel == HAL_TIM_ACTIVE_CHANNEL_2)  // if the interrupt source is channel2
 	{
-		static uint8_t Is_First_Captured_CH2 = 0; // flag for channel 2 first capture
-		static uint32_t IC_Val1_CH2 = 0, IC_Val2_CH2 = 0, Difference_CH2 = 0;
+//		static uint8_t Is_First_Captured_CH2 = 0; // flag for channel 2 first capture
+//		static uint32_t IC_Val1_CH2 = 0, IC_Val2_CH2 = 0, Difference_CH2 = 0;
 
 		if (Is_First_Captured_CH2 == 0) // if the first value is not captured
 		{
