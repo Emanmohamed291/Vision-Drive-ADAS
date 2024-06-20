@@ -10,5 +10,8 @@
 
 void get_data_task(void * pvParameters);
 void drive_task(void * pvParameters);
+void HCSR04_1_Read_task(void * pvParameters);
+void HCSR04_2_Read_task(void * pvParameters);
+void blind_spot_task(void * pvParameters);
 
 #endif /* INC_DRIVE_H_ */
