@@ -82,6 +82,9 @@ int main(void)
   /* USER CODE BEGIN Init */
   xTaskCreate(drive_task, "Driving Task", 100, ( void * ) 1, 3, NULL);
   xTaskCreate(get_data_task, "Bluetooth Task", 100, ( void * ) 1, 2, NULL);
+  xTaskCreate(HCSR04_1_Read_task, "HCSR04_1 Task", 100, ( void * ) 1, 1, NULL);
+  xTaskCreate(HCSR04_2_Read_task, "HCSR04_2 Task", 100, ( void * ) 1, 4, NULL);
+  xTaskCreate(blind_spot_task, "blind spot Task", 100, ( void * ) 1, 5, NULL);
 
   /* USER CODE END Init */
 

@@ -22,8 +22,8 @@
 /*Variables*/
 extern TIM_HandleTypeDef htim2;
 static uint32_t Counted_Holes = 0;
-static uint32_t Speed = 0;
-static uint32_t rpm = 0;
+uint32_t Speed = 0;
+uint32_t rpm = 0;
 static uint32_t count = 0;
 static uint32_t Prev_Counted_Holes= 0;
 /***********/
@@ -33,26 +33,37 @@ static uint32_t Prev_Counted_Holes= 0;
 
 
 /*APIs Implementation*/
+
+/*
 void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim)
 {
 	Counted_Holes++;
 }
+*/
+void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
+{
+	if (GPIO_Pin == GPIO_PIN_12)
+	{
+		Counted_Holes++;
+	}
+}
 
 void Tachometer_Start(void)
 {
-	HAL_TIM_Encoder_Start_IT(&htim2, TIM_CHANNEL_1 );
+	HAL_NVIC_EnableIRQ(EXTI15_10_IRQn);
+	 HAL_TIM_Base_Start_IT(&htim2);
 }
 
 void Tachometer_Stop(void)
 {
-
-	HAL_TIM_Encoder_Stop_IT(&htim2, TIM_CHANNEL_1);
+	HAL_NVIC_DisableIRQ(EXTI15_10_IRQn);
+	HAL_TIM_Base_Stop_IT(&htim2);
 }
 
 
-void Tahcometer_SpeedCalculate_CallBack(void)
+void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
-    count++;
+	count++;
 	if (count == 1000)
 	{	// Comes Every 1 Sec
 	    Speed = Counted_Holes - Prev_Counted_Holes; // Tick per second
