@@ -82,11 +82,17 @@ void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef* huart, uint16_t Size){
 	HAL_UARTEx_ReceiveToIdle_IT(huart, Data, 1);
 
 }
-int32_t IC_Val1 = 0;
-uint32_t IC_Val2 = 0;
-uint32_t Difference = 0;
-uint8_t Is_First_Captured = 0;  // is the first value captured ?
-uint8_t Distance  = 0;
+//int32_t IC_Val1 = 0;
+//uint32_t IC_Val2 = 0;
+//uint32_t Difference = 0;
+//uint8_t Is_First_Captured = 0;  // is the first value captured ?
+//uint8_t Distance  = 0;
+static uint8_t Is_First_Captured_CH1 = 0; // flag for channel 1 first capture
+static uint32_t IC_Val1_CH1 = 0, IC_Val2_CH1 = 0, Difference_CH1 = 0;
+float Distance_CH1 = 0.0f;
+static uint8_t Is_First_Captured_CH2 = 0; // flag for channel 1 first capture
+static uint32_t IC_Val1_CH2 = 0, IC_Val2_CH2 = 0, Difference_CH2 = 0;
+float Distance_CH2 = 0.0f;
 
 void Delay(uint16_t delay){
 	__HAL_TIM_SET_COUNTER(&htim2, 0);
@@ -103,48 +109,64 @@ void Delay(uint16_t delay){
 
 void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim)
 {
-	if (htim->Channel == HAL_TIM_ACTIVE_CHANNEL_1)  // if the interrupt source is channel1
-	{
-		if (Is_First_Captured==0) // if the first value is not captured
-		{
-			IC_Val1 = HAL_TIM_ReadCapturedValue(htim, TIM_CHANNEL_1); // read the first value
-			Is_First_Captured = 1;  // set the first captured as true
-			// Now change the polarity to falling edge
-			__HAL_TIM_SET_CAPTUREPOLARITY(htim, TIM_CHANNEL_1, TIM_INPUTCHANNELPOLARITY_FALLING);
-		}
+    if (htim->Instance == TIM1) // Check if the interrupt source is TIM1
+    {
+        if (htim->Channel == HAL_TIM_ACTIVE_CHANNEL_1) // Channel 1
+        {
+            if (Is_First_Captured_CH1 == 0)
+            {
+                IC_Val1_CH1 = HAL_TIM_ReadCapturedValue(htim, TIM_CHANNEL_1);
+                Is_First_Captured_CH1 = 1;
+                __HAL_TIM_SET_CAPTUREPOLARITY(htim, TIM_CHANNEL_1, TIM_INPUTCHANNELPOLARITY_FALLING);
+            }
+            else
+            {
+                IC_Val2_CH1 = HAL_TIM_ReadCapturedValue(htim, TIM_CHANNEL_1);
+                Difference_CH1 = IC_Val2_CH1 > IC_Val1_CH1 ? IC_Val2_CH1 - IC_Val1_CH1 : (0xFFFF - IC_Val1_CH1) + IC_Val2_CH1;
+                Distance_CH1 = Difference_CH1 * 0.034 / 2;
+                Is_First_Captured_CH1 = 0;
+                __HAL_TIM_SET_CAPTUREPOLARITY(htim, TIM_CHANNEL_1, TIM_INPUTCHANNELPOLARITY_RISING);
+                __HAL_TIM_DISABLE_IT(htim, TIM_IT_CC1);
+            }
+        }
 
-		else if (Is_First_Captured==1)   // if the first is already captured
-		{
-			IC_Val2 = HAL_TIM_ReadCapturedValue(htim, TIM_CHANNEL_1);  // read second value
-			__HAL_TIM_SET_COUNTER(htim, 0);  // reset the counter
-
-			if (IC_Val2 > IC_Val1)
-			{
-				Difference = IC_Val2-IC_Val1;
-			}
-
-			else if (IC_Val1 > IC_Val2)
-			{
-				Difference = (0xffff - IC_Val1) + IC_Val2;
-			}
-
-			Distance = Difference * .034/2;
-			Is_First_Captured = 0; // set it back to false
-
-			// set polarity to rising edge
-			__HAL_TIM_SET_CAPTUREPOLARITY(htim, TIM_CHANNEL_1, TIM_INPUTCHANNELPOLARITY_RISING);
-			__HAL_TIM_DISABLE_IT(&htim1, TIM_IT_CC1);
-		}
-	}
+        if (htim->Channel == HAL_TIM_ACTIVE_CHANNEL_2) // Channel 2
+        {
+            if (Is_First_Captured_CH2 == 0)
+            {
+                IC_Val1_CH2 = HAL_TIM_ReadCapturedValue(htim, TIM_CHANNEL_2);
+                Is_First_Captured_CH2 = 1;
+                __HAL_TIM_SET_CAPTUREPOLARITY(htim, TIM_CHANNEL_2, TIM_INPUTCHANNELPOLARITY_FALLING);
+            }
+            else
+            {
+                IC_Val2_CH2 = HAL_TIM_ReadCapturedValue(htim, TIM_CHANNEL_2);
+                Difference_CH2 = IC_Val2_CH2 > IC_Val1_CH2 ? IC_Val2_CH2 - IC_Val1_CH2 : (0xFFFF - IC_Val1_CH2) + IC_Val2_CH2;
+                Distance_CH2 = Difference_CH2 * 0.034 / 2;
+                Is_First_Captured_CH2 = 0;
+                __HAL_TIM_SET_CAPTUREPOLARITY(htim, TIM_CHANNEL_2, TIM_INPUTCHANNELPOLARITY_RISING);
+                __HAL_TIM_DISABLE_IT(htim, TIM_IT_CC2);
+            }
+        }
+    }
 }
 
-void HCSR04_Read (void)
+
+void HCSR04_Read_ch1 (void)
 {
-	HAL_GPIO_WritePin(TRIG_PORT, TRIG_PIN, GPIO_PIN_SET);  // pull the TRIG pin HIGH
+	HAL_GPIO_WritePin(Trig1_GPIO_Port, Trig1_Pin, GPIO_PIN_SET);  // pull the TRIG pin HIGH
 	Delay(10);  // wait for 10 us
-	HAL_GPIO_WritePin(TRIG_PORT, TRIG_PIN, GPIO_PIN_RESET);  // pull the TRIG pin low
+	HAL_GPIO_WritePin(Trig1_GPIO_Port, Trig1_Pin, GPIO_PIN_RESET);  // pull the TRIG pin low
 
 	__HAL_TIM_ENABLE_IT(&htim1, TIM_IT_CC1);
+}
+void HCSR04_Read_ch2 (void)
+{
+	HAL_GPIO_WritePin(Trig2_GPIO_Port, Trig2_Pin, GPIO_PIN_SET);  // pull the TRIG pin HIGH
+	Delay(10);  // wait for 10 us
+	HAL_GPIO_WritePin(Trig2_GPIO_Port, Trig2_Pin, GPIO_PIN_RESET);  // pull the TRIG pin low
+
+	__HAL_TIM_ENABLE_IT(&htim1, TIM_IT_CC2);
 }
 
 /* USER CODE END 0 */
@@ -184,9 +206,10 @@ int main(void)
   /* USER CODE BEGIN 2 */
  // ESP_Init("WE_B5CFD00", "FaDl$MoHaMeD$$2024", "192.168.1.7");
   HAL_TIM_IC_Start_IT(&htim1, TIM_CHANNEL_1);
+  HAL_TIM_IC_Start_IT(&htim1, TIM_CHANNEL_2);
   HAL_TIM_Base_Start(&htim2);
-  HCSR04_Read();
-
+  HCSR04_Read_ch1();
+  HCSR04_Read_ch2();
   HAL_UARTEx_ReceiveToIdle_IT(&huart1, Data, 1);
   HAL_UARTEx_ReceiveToIdle_IT(&huart2, Data, 1);
   /* USER CODE END 2 */
@@ -194,18 +217,35 @@ int main(void)
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
  // HAL_GPIO_WritePin(LED1_GPIO_Port, LED1_Pin, LED_ON);
-  while (1)
-  {
+
 
 
     /* USER CODE BEGIN 3 */
-	  HCSR04_Read();
-	  if(Distance >10){
-		 // HAL_GPIO_WritePin(LED1_GPIO_Port, LED1_Pin, GPIO_PIN_SET);
-	  }
-	  else{
-		 // HAL_GPIO_WritePin(LED1_GPIO_Port, LED1_Pin, GPIO_PIN_RESET);
-	  }
+	  while (1)
+	  {
+	      HCSR04_Read_ch1();
+	      if (Distance_CH1 > 10)
+	      {
+	          HAL_GPIO_WritePin(LED1_GPIO_Port, LED1_Pin, GPIO_PIN_SET);
+	      }
+	      else
+	      {
+	          HAL_GPIO_WritePin(LED1_GPIO_Port, LED1_Pin, GPIO_PIN_RESET);
+	      }
+
+	      HCSR04_Read_ch2();
+	      if (Distance_CH2 > 10)
+	      {
+	          HAL_GPIO_WritePin(LED2_GPIO_Port, LED2_Pin, GPIO_PIN_SET);
+	      }
+	      else
+	      {
+	          HAL_GPIO_WritePin(LED2_GPIO_Port, LED2_Pin, GPIO_PIN_RESET);
+	      }
+
+	      HAL_Delay(10); // Add a delay to allow time for sensor readings
+
+
 	  if(HAL_GPIO_ReadPin(IR_Sensor_GPIO_Port, IR_Sensor_Pin) == GPIO_PIN_RESET){
 		//  HAL_GPIO_WritePin(LED1_GPIO_Port, LED1_Pin, GPIO_PIN_SET);
 	  }
@@ -213,6 +253,10 @@ int main(void)
 
 		 // HAL_GPIO_WritePin(LED1_GPIO_Port, LED1_Pin, GPIO_PIN_RESET);
 	  }
+    /* USER CODE END WHILE */
+
+    /* USER CODE BEGIN 3 */
+
 	  /* USER CODE END WHILE */
   }
   /* USER CODE END 3 */
@@ -300,6 +344,11 @@ static void MX_TIM1_Init(void)
   {
     Error_Handler();
   }
+  sConfigIC.ICFilter = 0;
+  if (HAL_TIM_IC_ConfigChannel(&htim1, &sConfigIC, TIM_CHANNEL_2) != HAL_OK)
+  {
+    Error_Handler();
+  }
   /* USER CODE BEGIN TIM1_Init 2 */
 
   /* USER CODE END TIM1_Init 2 */
@@ -367,7 +416,7 @@ static void MX_USART1_UART_Init(void)
 
   /* USER CODE END USART1_Init 1 */
   huart1.Instance = USART1;
-  huart1.Init.BaudRate = 9600;
+  huart1.Init.BaudRate = 115200;
   huart1.Init.WordLength = UART_WORDLENGTH_8B;
   huart1.Init.StopBits = UART_STOPBITS_1;
   huart1.Init.Parity = UART_PARITY_NONE;
@@ -434,7 +483,10 @@ static void MX_GPIO_Init(void)
   __HAL_RCC_GPIOB_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOA, LED1_Pin|Trigger1_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOA, LED1_Pin|LED2_Pin, GPIO_PIN_RESET);
+
+  /*Configure GPIO pin Output Level */
+  HAL_GPIO_WritePin(GPIOB, Trig1_Pin|Trig2_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin : LED1_Pin */
   GPIO_InitStruct.Pin = LED1_Pin;
@@ -443,12 +495,19 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(LED1_GPIO_Port, &GPIO_InitStruct);
 
-  /*Configure GPIO pin : Trigger1_Pin */
-  GPIO_InitStruct.Pin = Trigger1_Pin;
+  /*Configure GPIO pin : LED2_Pin */
+  GPIO_InitStruct.Pin = LED2_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-  HAL_GPIO_Init(Trigger1_GPIO_Port, &GPIO_InitStruct);
+  HAL_GPIO_Init(LED2_GPIO_Port, &GPIO_InitStruct);
+
+  /*Configure GPIO pins : Trig1_Pin Trig2_Pin */
+  GPIO_InitStruct.Pin = Trig1_Pin|Trig2_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
   /*Configure GPIO pin : IR_Sensor_Pin */
   GPIO_InitStruct.Pin = IR_Sensor_Pin;
