@@ -22,6 +22,7 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "ESP_DATA_HANDLER.h"
+#include "ultrasonic.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -40,6 +41,7 @@
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
+
 TIM_HandleTypeDef htim1;
 TIM_HandleTypeDef htim2;
 
@@ -87,87 +89,12 @@ void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef* huart, uint16_t Size){
 //uint32_t Difference = 0;
 //uint8_t Is_First_Captured = 0;  // is the first value captured ?
 //uint8_t Distance  = 0;
-static uint8_t Is_First_Captured_CH1 = 0; // flag for channel 1 first capture
-static uint32_t IC_Val1_CH1 = 0, IC_Val2_CH1 = 0, Difference_CH1 = 0;
-float Distance_CH1 = 0.0f;
-static uint8_t Is_First_Captured_CH2 = 0; // flag for channel 1 first capture
-static uint32_t IC_Val1_CH2 = 0, IC_Val2_CH2 = 0, Difference_CH2 = 0;
-float Distance_CH2 = 0.0f;
-
-void Delay(uint16_t delay){
-	__HAL_TIM_SET_COUNTER(&htim2, 0);
-	while(__HAL_TIM_GET_COUNTER(&htim2) < delay);
-}
-// Let's write the callback function
-
-
-
-#define TRIG_PIN GPIO_PIN_9
-#define TRIG_PORT GPIOA
 
 // Let's write the callback function
 
-void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim)
-{
-    if (htim->Instance == TIM1) // Check if the interrupt source is TIM1
-    {
-        if (htim->Channel == HAL_TIM_ACTIVE_CHANNEL_1) // Channel 1
-        {
-            if (Is_First_Captured_CH1 == 0)
-            {
-                IC_Val1_CH1 = HAL_TIM_ReadCapturedValue(htim, TIM_CHANNEL_1);
-                Is_First_Captured_CH1 = 1;
-                __HAL_TIM_SET_CAPTUREPOLARITY(htim, TIM_CHANNEL_1, TIM_INPUTCHANNELPOLARITY_FALLING);
-            }
-            else
-            {
-                IC_Val2_CH1 = HAL_TIM_ReadCapturedValue(htim, TIM_CHANNEL_1);
-                Difference_CH1 = IC_Val2_CH1 > IC_Val1_CH1 ? IC_Val2_CH1 - IC_Val1_CH1 : (0xFFFF - IC_Val1_CH1) + IC_Val2_CH1;
-                Distance_CH1 = Difference_CH1 * 0.034 / 2;
-                Is_First_Captured_CH1 = 0;
-                __HAL_TIM_SET_CAPTUREPOLARITY(htim, TIM_CHANNEL_1, TIM_INPUTCHANNELPOLARITY_RISING);
-                __HAL_TIM_DISABLE_IT(htim, TIM_IT_CC1);
-            }
-        }
-
-        if (htim->Channel == HAL_TIM_ACTIVE_CHANNEL_2) // Channel 2
-        {
-            if (Is_First_Captured_CH2 == 0)
-            {
-                IC_Val1_CH2 = HAL_TIM_ReadCapturedValue(htim, TIM_CHANNEL_2);
-                Is_First_Captured_CH2 = 1;
-                __HAL_TIM_SET_CAPTUREPOLARITY(htim, TIM_CHANNEL_2, TIM_INPUTCHANNELPOLARITY_FALLING);
-            }
-            else
-            {
-                IC_Val2_CH2 = HAL_TIM_ReadCapturedValue(htim, TIM_CHANNEL_2);
-                Difference_CH2 = IC_Val2_CH2 > IC_Val1_CH2 ? IC_Val2_CH2 - IC_Val1_CH2 : (0xFFFF - IC_Val1_CH2) + IC_Val2_CH2;
-                Distance_CH2 = Difference_CH2 * 0.034 / 2;
-                Is_First_Captured_CH2 = 0;
-                __HAL_TIM_SET_CAPTUREPOLARITY(htim, TIM_CHANNEL_2, TIM_INPUTCHANNELPOLARITY_RISING);
-                __HAL_TIM_DISABLE_IT(htim, TIM_IT_CC2);
-            }
-        }
-    }
-}
 
 
-void HCSR04_Read_ch1 (void)
-{
-	HAL_GPIO_WritePin(Trig1_GPIO_Port, Trig1_Pin, GPIO_PIN_SET);  // pull the TRIG pin HIGH
-	Delay(10);  // wait for 10 us
-	HAL_GPIO_WritePin(Trig1_GPIO_Port, Trig1_Pin, GPIO_PIN_RESET);  // pull the TRIG pin low
 
-	__HAL_TIM_ENABLE_IT(&htim1, TIM_IT_CC1);
-}
-void HCSR04_Read_ch2 (void)
-{
-	HAL_GPIO_WritePin(Trig2_GPIO_Port, Trig2_Pin, GPIO_PIN_SET);  // pull the TRIG pin HIGH
-	Delay(10);  // wait for 10 us
-	HAL_GPIO_WritePin(Trig2_GPIO_Port, Trig2_Pin, GPIO_PIN_RESET);  // pull the TRIG pin low
-
-	__HAL_TIM_ENABLE_IT(&htim1, TIM_IT_CC2);
-}
 
 /* USER CODE END 0 */
 
@@ -223,8 +150,8 @@ int main(void)
     /* USER CODE BEGIN 3 */
 	  while (1)
 	  {
-	      HCSR04_Read_ch1();
-	      if (Distance_CH1 > 10)
+	     float Distance1 = HCSR04_Read_ch1();
+	      if (Distance1 > 10)
 	      {
 	          HAL_GPIO_WritePin(LED1_GPIO_Port, LED1_Pin, GPIO_PIN_SET);
 	      }
@@ -233,8 +160,8 @@ int main(void)
 	          HAL_GPIO_WritePin(LED1_GPIO_Port, LED1_Pin, GPIO_PIN_RESET);
 	      }
 
-	      HCSR04_Read_ch2();
-	      if (Distance_CH2 > 10)
+	      float Distance2 = HCSR04_Read_ch2();
+	      if (Distance2 > 10)
 	      {
 	          HAL_GPIO_WritePin(LED2_GPIO_Port, LED2_Pin, GPIO_PIN_SET);
 	      }
