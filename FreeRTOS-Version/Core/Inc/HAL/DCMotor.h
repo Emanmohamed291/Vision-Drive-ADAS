@@ -32,10 +32,10 @@ typedef struct
 
 typedef enum
 {
-	Channel_1,
-	Channel_2,
-	Channel_3,
-	Channel_4,
+	Channel_1=0,
+	Channel_2=4,
+	Channel_3=8,
+	Channel_4=12,
 }Enable_Tim_Channel;
 
 typedef enum

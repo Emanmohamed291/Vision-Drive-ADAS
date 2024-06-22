@@ -90,19 +90,18 @@ void get_data_task(void * pvParameters)
 	while(1)
 	{
 		CarInfo.DriverInput = BL_ReadByteSync();
-		//HAL_USART_Receive(&husart1, &Data, 1, 1);
-		//HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_13);
+
 		vTaskDelay(pdMS_TO_TICKS(10));
 	}
 }
 
 void drive_task(void)
 {
-	int steer_counter = 0;
+	//int steer_counter = 0;
 
 	//DCMotorInit();
 	//DCMotor_Start(DRIVING_MOTOR);
-	DCMotor_SetSpeed(STEERING_MOTOR, 50);
+	DCMotor_SetSpeed(STEERING_MOTOR, 7);
 
 	while(1)
 	{
@@ -112,11 +111,8 @@ void drive_task(void)
 			break;
 
 		case forward:
-			if((CarInfo.last_state == steer_right) || (CarInfo.last_state == steer_left))
-			{
-				DCMotor_Stop(STEERING_MOTOR);
-			}
-			DCMotor_Start(DRIVING_MOTOR);
+
+			DCMotor_StartForward(DRIVING_MOTOR);
 			CarInfo.DriverInput = idle;
 			break;
 
@@ -131,18 +127,20 @@ void drive_task(void)
 			break;
 
 		case steer_right:
-			DCMotor_StartReverse(STEERING_MOTOR);
+			DCMotor_SetSpeed(STEERING_MOTOR, 75);
+			DCMotor_StartForward(STEERING_MOTOR);
 			//steer_counter++;
 			CarInfo.DriverInput=idle;
 			break;
 
 		case steer_left:
-			DCMotor_Start(STEERING_MOTOR);
+			DCMotor_SetSpeed(STEERING_MOTOR, 75);
+			DCMotor_StartReverse(STEERING_MOTOR);
 			//steer_counter++;
 			CarInfo.DriverInput=idle;
 			break;
 
-		case speed_100: CarInfo.DriverInput = 100;
+		case speed_100: CarInfo.DriverInput = ':';
 		case speed_0:
 		case speed_10:
 		case speed_20:
@@ -152,22 +150,21 @@ void drive_task(void)
 		case speed_60:
 		case speed_70:
 		case speed_80:
-		case speed_90:
-			DCMotor_SetSpeed(DRIVING_MOTOR, CarInfo.DriverInput);
-			CarInfo.speed = CarInfo.DriverInput;
+		case speed_90: CarInfo.speed = (CarInfo.DriverInput - '0')*10;
+			DCMotor_SetSpeed(DRIVING_MOTOR, CarInfo.speed);
 			CarInfo.DriverInput=idle;
 //			CarInfo.DriverInput += 10;
 //			if(CarInfo.DriverInput >= 100) CarInfo.DriverInput %= 100;
 			break;
 
-		case fwd_left:  DCMotor_StartReverse(DRIVING_MOTOR); DCMotor_Start(DRIVING_MOTOR); 	 	  break;
-		case fwd_right: DCMotor_Start(DRIVING_MOTOR); 		 DCMotor_Start(DRIVING_MOTOR); 		  break;
-		case back_left: DCMotor_StartReverse(DRIVING_MOTOR); DCMotor_StartReverse(DRIVING_MOTOR); break;
-		case back_right:DCMotor_Start(DRIVING_MOTOR); 		 DCMotor_StartReverse(DRIVING_MOTOR); break;
+		case fwd_left:  DCMotor_StartReverse(STEERING_MOTOR); DCMotor_StartForward(DRIVING_MOTOR); break;
+		case fwd_right: DCMotor_StartForward(STEERING_MOTOR); DCMotor_StartForward(DRIVING_MOTOR); break;
+		case back_left: DCMotor_StartReverse(STEERING_MOTOR); DCMotor_StartReverse(DRIVING_MOTOR); break;
+		case back_right:DCMotor_StartForward(STEERING_MOTOR); DCMotor_StartReverse(DRIVING_MOTOR); break;
 
 		case stop:
-			DCMotor_Stop(DRIVING_MOTOR);
 			DCMotor_Stop(STEERING_MOTOR);
+			DCMotor_Stop(DRIVING_MOTOR);
 			CarInfo.DriverInput=idle;
 			break;
 

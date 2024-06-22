@@ -23,9 +23,9 @@
 /*Variables*/
 const DCMotorcfg_t DCMotors[_DCMotors_num] =
 {
-    [DCMotor_1] = {.Input_1.Pin = GPIO_PIN_1,
+    [DCMotor_1] = {.Input_1.Pin = GPIO_PIN_2,
                    .Input_1.Port = GPIOA,
-                   .Input_2.Pin = GPIO_PIN_2,
+                   .Input_2.Pin = GPIO_PIN_1,
                    .Input_2.Port = GPIOA,
                    .Enable_Timer = Timer_3,
                    .Enable_Channel = Channel_1},
