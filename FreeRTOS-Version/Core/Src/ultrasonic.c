@@ -11,7 +11,7 @@
 
 static uint8_t Is_First_Captured_CH1 = 0; // flag for channel 1 first capture
 static uint32_t IC_Val1_CH1 = 0, IC_Val2_CH1 = 0, Difference_CH1 = 0;
-float Distance_CH1 = 0.0f;
+float Distance_CH1 = 5000.0;
 static uint8_t Is_First_Captured_CH2 = 0; // flag for channel 1 first capture
 static uint32_t IC_Val1_CH2 = 0, IC_Val2_CH2 = 0, Difference_CH2 = 0;
 float Distance_CH2 = 0.0f;

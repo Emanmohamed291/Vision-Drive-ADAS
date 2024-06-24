@@ -17,9 +17,9 @@
 extern TIM_HandleTypeDef htim1;
 
 
-
-float HCSR04_Read_ch1();
-float HCSR04_Read_ch2();
-
+//void HCSR04_Read_ch1 (float * distance);
+//void HCSR04_Read_ch2 (float * distance);
+float HCSR04_Read_ch1 (void);
+float HCSR04_Read_ch2 (void);
 
 #endif /* SRC_ULTRASONIC_H_ */

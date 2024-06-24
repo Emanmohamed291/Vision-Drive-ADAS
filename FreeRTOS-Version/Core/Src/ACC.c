@@ -39,7 +39,7 @@ typedef enum
 
 /************************************************Variables***********************************************/
 uint32_t Max_Speed = 80;
-uint32_t Min_Distance = 5;
+uint32_t Min_Distance = 10;
 enuACC_State ACC_State = ACC_ON;
 enuACC_Modes ACC_Mode = Adaptive_Cruise_Control;
 /********************************************************************************************************/
@@ -117,7 +117,7 @@ void CruiseControl_Task(void const * argument)
 	{
 	case(ACC_ON):
 		uint32_t Current_Speed;
-		float Current_Distance;
+		float Current_Distance = 0.0;
 		uint32_t Setted_Speed = 0;
 		if(DCMotor_GetSpeedPrecentage(DRIVING_MOTOR, &Current_Speed)==enuErrorStatus_Ok)
 		{
@@ -126,7 +126,7 @@ void CruiseControl_Task(void const * argument)
 			case(Cruise_Control):
 				if(Current_Speed>Max_Speed)
 				{
-					while(Current_Speed>(Max_Speed-5))
+					while(Current_Speed>(Max_Speed-1))
 					{
 						Current_Speed--;
 						DCMotor_SetSpeed(DRIVING_MOTOR, Current_Speed);
@@ -136,9 +136,9 @@ void CruiseControl_Task(void const * argument)
 			break;
 			case(Adaptive_Cruise_Control):
 				Current_Distance = HCSR04_Read_ch1();
-				if(Current_Distance<Min_Distance)
+				if(Current_Distance<10/*Min_Distance*/)
 				{
-					while((Current_Distance<(Min_Distance+2))&&Current_Speed)
+					while((Current_Distance<(Min_Distance+1))&&Current_Speed)
 					{
 						Current_Speed--;
 						DCMotor_SetSpeed(DRIVING_MOTOR, Current_Speed);
