@@ -27,6 +27,7 @@
 /* USER CODE BEGIN Includes */
 #include "task.h"
 #include "drive.h"
+#include "ACC.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -80,12 +81,12 @@ int main(void)
   HAL_Init();
 
   /* USER CODE BEGIN Init */
-  xTaskCreate(drive_task, "Driving Task", 100, ( void * ) 1, 3, NULL);
-  xTaskCreate(get_data_task, "Bluetooth Task", 100, ( void * ) 1, 2, NULL);
-  xTaskCreate(HCSR04_1_Read_task, "HCSR04_1 Task", 100, ( void * ) 1, 1, NULL);
-  xTaskCreate(HCSR04_2_Read_task, "HCSR04_2 Task", 100, ( void * ) 1, 4, NULL);
-  xTaskCreate(blind_spot_task, "blind spot Task", 100, ( void * ) 1, 5, NULL);
-
+  xTaskCreate(drive_task, "Driving Task", 128, ( void * ) 1, 3, NULL);
+  xTaskCreate(get_data_task, "Bluetooth Task", 128, ( void * ) 1, 2, NULL);
+//  xTaskCreate(HCSR04_1_Read_task, "HCSR04_1 Task", 100, ( void * ) 1, 1, NULL);
+//  xTaskCreate(HCSR04_2_Read_task, "HCSR04_2 Task", 100, ( void * ) 1, 4, NULL);
+//  xTaskCreate(blind_spot_task, "blind spot Task", 100, ( void * ) 1, 5, NULL);
+  xTaskCreate(CruiseControl_Task, "CruiseControl", 128, ( void * ) 1, 5, NULL);
   /* USER CODE END Init */
 
   /* Configure the system clock */
@@ -99,6 +100,7 @@ int main(void)
   MX_GPIO_Init();
   MX_USART1_UART_Init();
   MX_TIM3_Init();
+  MX_TIM1_Init();
   MX_TIM2_Init();
   /* USER CODE BEGIN 2 */
 //  TIM2->CCR2 = 1500;
@@ -174,7 +176,7 @@ void SystemClock_Config(void)
 
 /**
   * @brief  Period elapsed callback in non blocking mode
-  * @note   This function is called  when TIM1 interrupt took place, inside
+  * @note   This function is called  when TIM4 interrupt took place, inside
   * HAL_TIM_IRQHandler(). It makes a direct call to HAL_IncTick() to increment
   * a global variable "uwTick" used as application time base.
   * @param  htim : TIM handle
@@ -185,7 +187,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
   /* USER CODE BEGIN Callback 0 */
 
   /* USER CODE END Callback 0 */
-  if (htim->Instance == TIM1) {
+  if (htim->Instance == TIM4) {
     HAL_IncTick();
   }
   /* USER CODE BEGIN Callback 1 */

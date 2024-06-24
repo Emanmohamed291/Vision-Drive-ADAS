@@ -12,7 +12,9 @@
 #define _DCMOTOR_H
 
 /*Includes*/
+#include "stm32f1xx_hal.h"
 #include "DCMotor_cfg.h"
+#include "ErrorStatus.h"
 /**********/
 
 /*Defines*/
@@ -66,12 +68,13 @@ typedef enum
 
 
 /*APIs*/
-DCMotorErrorStatus_t DCMotor_Init(void);
-DCMotorErrorStatus_t DCMotor_Start(uint32_t Copy_u32DCMotor);
-DCMotorErrorStatus_t DCMotor_Stop(uint32_t Copy_u32DCMotor);
-DCMotorErrorStatus_t DCMotor_StartForward(uint32_t Copy_u32DCMotor);
-DCMotorErrorStatus_t DCMotor_StartReverse(uint32_t Copy_u32DCMotor);
-DCMotorErrorStatus_t DCMotor_SetSpeed(uint32_t Copy_u32DCMotor, uint32_t Copy_u32SpeedPercentage);
+enuErrorStatus_t DCMotor_Init(void);
+enuErrorStatus_t DCMotor_Start(uint32_t Copy_u32DCMotor);
+enuErrorStatus_t DCMotor_Stop(uint32_t Copy_u32DCMotor);
+enuErrorStatus_t DCMotor_StartForward(uint32_t Copy_u32DCMotor);
+enuErrorStatus_t DCMotor_StartReverse(uint32_t Copy_u32DCMotor);
+enuErrorStatus_t DCMotor_SetSpeed(uint32_t Copy_u32DCMotor, uint32_t Copy_u32SpeedPercentage);
+enuErrorStatus_t DCMotor_GetSpeedPrecentage(uint32_t Copy_u32DCMotor, uint32_t * Add_pu32Speed);
 /******/
 
 #endif /*_DCMOTOR_H*/
