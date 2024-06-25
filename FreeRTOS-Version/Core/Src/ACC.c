@@ -13,6 +13,7 @@
 #include "HAL/DCMotor_cfg.h"
 #include "ultrasonic.h"
 #include "cmsis_os.h"
+#include "task.h"
 /********************************************************************************************************/
 
 
@@ -38,10 +39,13 @@ typedef enum
 
 
 /************************************************Variables***********************************************/
-uint32_t Max_Speed = 80;
+uint32_t Max_Speed = 70;
 uint32_t Min_Distance = 10;
 enuACC_State ACC_State = ACC_ON;
 enuACC_Modes ACC_Mode = Adaptive_Cruise_Control;
+extern TaskHandle_t Distance1_Measure;
+extern float Distance_CH1;
+extern float Distance_CH2;
 /********************************************************************************************************/
 
 
@@ -117,50 +121,59 @@ void CruiseControl_Task(void const * argument)
 	{
 	case(ACC_ON):
 		uint32_t Current_Speed;
-		float Current_Distance = 0.0;
-		uint32_t Setted_Speed = 0;
+		//float Current_Distance = 0.0;
 		if(DCMotor_GetSpeedPrecentage(DRIVING_MOTOR, &Current_Speed)==enuErrorStatus_Ok)
 		{
 			switch(ACC_Mode)
 			{
 			case(Cruise_Control):
+				if(Distance1_Measure != NULL)
+				{
+					vTaskSuspend(Distance1_Measure);
+				}
 				if(Current_Speed>Max_Speed)
 				{
-					while(Current_Speed>(Max_Speed-1))
-					{
+					//while(Current_Speed>(Max_Speed-1))
+					//{
 						Current_Speed--;
 						DCMotor_SetSpeed(DRIVING_MOTOR, Current_Speed);
-						DCMotor_GetSpeedPrecentage(DRIVING_MOTOR, &Current_Speed);
-					}
+						//DCMotor_GetSpeedPrecentage(DRIVING_MOTOR, &Current_Speed);
+					//}
 				}
 			break;
 			case(Adaptive_Cruise_Control):
-				Current_Distance = HCSR04_Read_ch1();
-				if(Current_Distance<10/*Min_Distance*/)
+				if(Distance1_Measure != NULL)
 				{
-					while((Current_Distance<(Min_Distance+1))&&Current_Speed)
-					{
-						Current_Speed--;
+					vTaskResume(Distance1_Measure);
+				}
+				if(Distance_CH1<Min_Distance)
+				{
+					//while((Distance_CH1<(Min_Distance+1))&&Current_Speed)
+					//{
+						Current_Speed-=5;
 						DCMotor_SetSpeed(DRIVING_MOTOR, Current_Speed);
-						DCMotor_GetSpeedPrecentage(DRIVING_MOTOR, &Current_Speed);
-						Current_Distance = HCSR04_Read_ch1();
-					}
+						//DCMotor_GetSpeedPrecentage(DRIVING_MOTOR, &Current_Speed);
+					//}
 				}
 				else if(Current_Speed>Max_Speed)
 				{
-					while(Current_Speed>(Max_Speed-5))
-					{
-						Current_Speed--;
+					//while(Current_Speed>(Max_Speed-5))
+					//{
+						Current_Speed-=5;
 						DCMotor_SetSpeed(DRIVING_MOTOR, Current_Speed);
-						DCMotor_GetSpeedPrecentage(DRIVING_MOTOR, &Current_Speed);
-					}
+						//DCMotor_GetSpeedPrecentage(DRIVING_MOTOR, &Current_Speed);
+					//}
 				}
 			break;
 			}
 		}
 		break;
 	case(ACC_OFF):
-			/*Do Nothing!*/
+		/*Do Nothing!*/
+		if(Distance1_Measure != NULL)
+		{
+			vTaskSuspend(Distance1_Measure);
+		}
 		break;
 	}
     osDelay(1); //This delay is in ms

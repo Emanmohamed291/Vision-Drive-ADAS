@@ -28,6 +28,7 @@
 #include "task.h"
 #include "drive.h"
 #include "ACC.h"
+#include "ultrasonic.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -48,7 +49,8 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
-
+TaskHandle_t Distance1_Measure = NULL;
+TaskHandle_t Distance2_Measure = NULL;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -81,12 +83,14 @@ int main(void)
   HAL_Init();
 
   /* USER CODE BEGIN Init */
-  xTaskCreate(drive_task, "Driving Task", 128, ( void * ) 1, 3, NULL);
-  xTaskCreate(get_data_task, "Bluetooth Task", 128, ( void * ) 1, 2, NULL);
+  xTaskCreate(drive_task, "Driving Task", 128, ( void * ) 1, 5, NULL);
+  xTaskCreate(get_data_task, "Bluetooth Task", 128, ( void * ) 1, 6, NULL);
 //  xTaskCreate(HCSR04_1_Read_task, "HCSR04_1 Task", 100, ( void * ) 1, 1, NULL);
 //  xTaskCreate(HCSR04_2_Read_task, "HCSR04_2 Task", 100, ( void * ) 1, 4, NULL);
 //  xTaskCreate(blind_spot_task, "blind spot Task", 100, ( void * ) 1, 5, NULL);
-  xTaskCreate(CruiseControl_Task, "CruiseControl", 128, ( void * ) 1, 5, NULL);
+    xTaskCreate(CruiseControl_Task, "CruiseControl", 128, ( void * ) 1, 5, NULL);
+    xTaskCreate(Distance1Measure_Task, "Distance 1 Measure", 128, ( void * ) 1, 6, &Distance1_Measure);
+//  xTaskCreate(Distance2Measure_Task, "Distance 2 Measure", 128, ( void * ) 1, 6, &Distance2_Measure);
   /* USER CODE END Init */
 
   /* Configure the system clock */

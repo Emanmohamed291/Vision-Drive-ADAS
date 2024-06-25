@@ -21,5 +21,7 @@ extern TIM_HandleTypeDef htim1;
 //void HCSR04_Read_ch2 (float * distance);
 float HCSR04_Read_ch1 (void);
 float HCSR04_Read_ch2 (void);
+void Distance1Measure_Task(void const * argument);
+void Distance2Measure_Task(void const * argument);
 
 #endif /* SRC_ULTRASONIC_H_ */

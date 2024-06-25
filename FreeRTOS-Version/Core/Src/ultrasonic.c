@@ -99,7 +99,25 @@ float HCSR04_Read_ch1 (void)
 	HAL_GPIO_WritePin(Trigger2, Trig2_Pin, GPIO_PIN_RESET);  // pull the TRIG pin low
 
 	__HAL_TIM_ENABLE_IT(&htim1, TIM_IT_CC2);
-	return Distance_CH1;
+	return Distance_CH2;
 }*/
 
+void Distance1Measure_Task(void const * argument)
+{
+	for(;;)
+	  {
+
+		HCSR04_Read_ch1();
+		osDelay(1);
+	  }
+}
+
+//void Distance2Measure_Task(void const * argument)
+//{
+//	for(;;)
+//	{
+//		HCSR04_Read_ch2();
+//		osDelay(1);
+//	}
+//}
 
