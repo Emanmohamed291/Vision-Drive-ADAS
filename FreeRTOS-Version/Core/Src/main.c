@@ -89,7 +89,7 @@ int main(void)
 //  xTaskCreate(HCSR04_2_Read_task, "HCSR04_2 Task", 100, ( void * ) 1, 4, NULL);
 //  xTaskCreate(blind_spot_task, "blind spot Task", 100, ( void * ) 1, 5, NULL);
    // xTaskCreate(CruiseControl_Task, "CruiseControl", 128, ( void * ) 1, 5, NULL);
-    //xTaskCreate(Distance1Measure_Task, "Distance 1 Measure", 128, ( void * ) 1, 6, &Distance1_Measure);
+    xTaskCreate(Distance1Measure_Task, "Distance 1 Measure", 128, ( void * ) 1, 6, &Distance1_Measure);
 //  xTaskCreate(Distance2Measure_Task, "Distance 2 Measure", 128, ( void * ) 1, 6, &Distance2_Measure);
   /* USER CODE END Init */
 

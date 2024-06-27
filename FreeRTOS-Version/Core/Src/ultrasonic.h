@@ -15,7 +15,7 @@
 #define Trig1_GPIO_Port GPIOB
 
 extern TIM_HandleTypeDef htim1;
-
+extern float Distance_CH1;
 
 //void HCSR04_Read_ch1 (float * distance);
 //void HCSR04_Read_ch2 (float * distance);

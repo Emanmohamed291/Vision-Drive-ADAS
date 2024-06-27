@@ -135,10 +135,15 @@ void CruiseControl_Task(void const * argument)
 				{
 					//while(Current_Speed>(Max_Speed-1))
 					//{
-						Current_Speed--;
+						Current_Speed-=20;
 						DCMotor_SetSpeed(DRIVING_MOTOR, Current_Speed);
 						//DCMotor_GetSpeedPrecentage(DRIVING_MOTOR, &Current_Speed);
 					//}
+				}
+				else
+				{
+					Current_Speed+=10;
+					DCMotor_SetSpeed(DRIVING_MOTOR, Current_Speed);
 				}
 			break;
 			case(Adaptive_Cruise_Control):
@@ -150,7 +155,7 @@ void CruiseControl_Task(void const * argument)
 				{
 					//while((Distance_CH1<(Min_Distance+1))&&Current_Speed)
 					//{
-						Current_Speed-=5;
+						Current_Speed-=20;
 						DCMotor_SetSpeed(DRIVING_MOTOR, Current_Speed);
 						//DCMotor_GetSpeedPrecentage(DRIVING_MOTOR, &Current_Speed);
 					//}
@@ -159,10 +164,15 @@ void CruiseControl_Task(void const * argument)
 				{
 					//while(Current_Speed>(Max_Speed-5))
 					//{
-						Current_Speed-=5;
+						Current_Speed-=20;
 						DCMotor_SetSpeed(DRIVING_MOTOR, Current_Speed);
 						//DCMotor_GetSpeedPrecentage(DRIVING_MOTOR, &Current_Speed);
 					//}
+				}
+				else
+				{
+					Current_Speed+=10;
+					DCMotor_SetSpeed(DRIVING_MOTOR, Current_Speed);
 				}
 			break;
 			}

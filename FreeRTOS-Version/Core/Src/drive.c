@@ -9,7 +9,7 @@
 /*												    Includes	 										     */
 /*===========================================================================================================*/
 #include "HAL/DCMotor.h"
-
+#include "ultrasonic.h"
 #include "cmsis_os.h"
 #include "task.h"
 #include "HAL/bluetooth.h"
@@ -21,9 +21,8 @@
 #define TYRE_CIRC 0.15
 
 #define MAX_SPEED ((MAX_RPM)*(TYRE_CIRC)*0.06)
+#define MINIMUM_DISTANCE	25	//Minimum distance in cm
 
-#define DRIVING_MOTOR	0
-#define STEERING_MOTOR 	1
 
 //#define TRIG2_PIN GPIO_PIN_3
 //#define TRIG2_PORT GPIOB
@@ -84,6 +83,76 @@ struct CarState
 
 struct CarState CarInfo = {0, forward, 0, idle};
 
+
+ControlCar(uint8_t input)
+{
+	switch(input)
+	{
+	case idle:
+		break;
+
+	case forward:
+
+		DCMotor_StartForward(DRIVING_MOTOR);
+		CarInfo.DriverInput = idle;
+		break;
+
+	case backward:
+		if((CarInfo.last_state == steer_right) || (CarInfo.last_state == steer_left))
+		{
+			DCMotor_Stop(STEERING_MOTOR);
+		}
+		DCMotor_StartReverse(DRIVING_MOTOR);
+		//DCMotor_Start(DRIVING_MOTOR);
+		CarInfo.DriverInput = idle;
+		break;
+
+	case steer_right:
+		DCMotor_SetSpeed(STEERING_MOTOR, 100);
+		DCMotor_StartForward(STEERING_MOTOR);
+		//steer_counter++;
+		CarInfo.DriverInput=idle;
+		break;
+
+	case steer_left:
+		DCMotor_SetSpeed(STEERING_MOTOR, 100);
+		DCMotor_StartReverse(STEERING_MOTOR);
+		//steer_counter++;
+		CarInfo.DriverInput=idle;
+		break;
+
+	case speed_100: CarInfo.DriverInput = ':';
+	case speed_0:
+	case speed_10:
+	case speed_20:
+	case speed_30:
+	case speed_40:
+	case speed_50:
+	case speed_60:
+	case speed_70:
+	case speed_80:
+	case speed_90: CarInfo.speed = (CarInfo.DriverInput - '0')*10;
+	DCMotor_SetSpeed(DRIVING_MOTOR, CarInfo.speed);
+	CarInfo.DriverInput=idle;
+	//			CarInfo.DriverInput += 10;
+	//			if(CarInfo.DriverInput >= 100) CarInfo.DriverInput %= 100;
+	break;
+
+	case fwd_left:  DCMotor_StartReverse(STEERING_MOTOR); DCMotor_StartForward(DRIVING_MOTOR); break;
+	case fwd_right: DCMotor_StartForward(STEERING_MOTOR); DCMotor_StartForward(DRIVING_MOTOR); break;
+	case back_left: DCMotor_StartReverse(STEERING_MOTOR); DCMotor_StartReverse(DRIVING_MOTOR); break;
+	case back_right:DCMotor_StartForward(STEERING_MOTOR); DCMotor_StartReverse(DRIVING_MOTOR); break;
+
+	case stop:
+		DCMotor_Stop(STEERING_MOTOR);
+		DCMotor_Stop(DRIVING_MOTOR);
+		CarInfo.DriverInput=idle;
+		break;
+
+	default: break;
+	}
+}
+
 void get_data_task(void * pvParameters)
 {
 	//uint8_t Data = 0;
@@ -106,70 +175,14 @@ void drive_task(void)
 
 	while(1)
 	{
-		switch(CarInfo.DriverInput)
+		if(MINIMUM_DISTANCE >= Distance_CH1)
 		{
-		case idle:
-			break;
-
-		case forward:
-
-			DCMotor_StartForward(DRIVING_MOTOR);
-			CarInfo.DriverInput = idle;
-			break;
-
-		case backward:
-			if((CarInfo.last_state == steer_right) || (CarInfo.last_state == steer_left))
-			{
-				DCMotor_Stop(STEERING_MOTOR);
-			}
-			DCMotor_StartReverse(DRIVING_MOTOR);
-			//DCMotor_Start(DRIVING_MOTOR);
-			CarInfo.DriverInput = idle;
-			break;
-
-		case steer_right:
-			DCMotor_SetSpeed(STEERING_MOTOR, 100);
-			DCMotor_StartForward(STEERING_MOTOR);
-			//steer_counter++;
-			CarInfo.DriverInput=idle;
-			break;
-
-		case steer_left:
-			DCMotor_SetSpeed(STEERING_MOTOR, 100);
-			DCMotor_StartReverse(STEERING_MOTOR);
-			//steer_counter++;
-			CarInfo.DriverInput=idle;
-			break;
-
-		case speed_100: CarInfo.DriverInput = ':';
-		case speed_0:
-		case speed_10:
-		case speed_20:
-		case speed_30:
-		case speed_40:
-		case speed_50:
-		case speed_60:
-		case speed_70:
-		case speed_80:
-		case speed_90: CarInfo.speed = (CarInfo.DriverInput - '0')*10;
-			DCMotor_SetSpeed(DRIVING_MOTOR, CarInfo.speed);
-			CarInfo.DriverInput=idle;
-//			CarInfo.DriverInput += 10;
-//			if(CarInfo.DriverInput >= 100) CarInfo.DriverInput %= 100;
-			break;
-
-		case fwd_left:  DCMotor_StartReverse(STEERING_MOTOR); DCMotor_StartForward(DRIVING_MOTOR); break;
-		case fwd_right: DCMotor_StartForward(STEERING_MOTOR); DCMotor_StartForward(DRIVING_MOTOR); break;
-		case back_left: DCMotor_StartReverse(STEERING_MOTOR); DCMotor_StartReverse(DRIVING_MOTOR); break;
-		case back_right:DCMotor_StartForward(STEERING_MOTOR); DCMotor_StartReverse(DRIVING_MOTOR); break;
-
-		case stop:
 			DCMotor_Stop(STEERING_MOTOR);
 			DCMotor_Stop(DRIVING_MOTOR);
-			CarInfo.DriverInput=idle;
-			break;
-
-		default: break;
+		}
+		else
+		{
+			ControlCar(CarInfo.DriverInput);
 		}
 
 		vTaskDelay(pdMS_TO_TICKS(2));

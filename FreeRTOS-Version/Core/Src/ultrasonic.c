@@ -108,7 +108,7 @@ void Distance1Measure_Task(void const * argument)
 	  {
 
 		HCSR04_Read_ch1();
-		osDelay(1);
+		osDelay(3);
 	  }
 }
 
