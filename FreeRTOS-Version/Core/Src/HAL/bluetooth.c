@@ -9,6 +9,7 @@
 #include "HAL/bluetooth.h"
 
 volatile uint8_t Data[1] = {0};
+uint8_t * Byte = NULL;
 
 uint8_t BL_ReadByteSync()
 {
@@ -32,10 +33,15 @@ uint8_t BL_ReadByteSync()
 	return temp;
 }
 
+void BL_ReadAsync(uint8_t* data)
+{
+	Byte = data;
+	HAL_UARTEx_ReceiveToIdle_IT(&huart1, data, 1);
+}
 
+void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef* huart, uint16_t Size){
+	/*if (huart->Instance == USART1){
 
-/*void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef* huart, uint16_t Size){
-	if (huart->Instance == USART1){
 		HAL_UART_Transmit(&huart2, Data, Size, 1000);
 		if(Data[0] == 'F'){
 			HAL_GPIO_WritePin(LED1_GPIO_Port, LED1_Pin, GPIO_PIN_SET);
@@ -48,7 +54,9 @@ uint8_t BL_ReadByteSync()
 	else if (huart->Instance == USART2){
 		HAL_UART_Transmit(&huart1, Data, Size, 1000);
 		HAL_UARTEx_ReceiveToIdle_IT(&huart2, Data, 1);
-	}
-	HAL_UARTEx_ReceiveToIdle_IT(huart, Data, 1);
+	}*/
 
-}*/
+	if(NULL != Byte)
+		HAL_UARTEx_ReceiveToIdle_IT(&huart1, Byte, 1);
+
+}

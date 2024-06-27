@@ -15,7 +15,7 @@
 
 /*Defines*/
 
-#define MAX_SPEED		10000
+#define MAX_SPEED		625
 
 #define IS_VALID_MOTOR(MOTOR)	((MOTOR) < _DCMotors_num)
 #define IS_NOT_NULL(PTR)		((PTR) != NULL)

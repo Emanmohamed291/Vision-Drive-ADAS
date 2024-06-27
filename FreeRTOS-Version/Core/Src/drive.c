@@ -17,7 +17,7 @@
 /*===========================================================================================================*/
 /*												     Macros		 										     */
 /*===========================================================================================================*/
-#define MAX_RPM 5000
+#define MAX_RPM 					//why we need this ??
 #define TYRE_CIRC 0.15
 
 #define MAX_SPEED ((MAX_RPM)*(TYRE_CIRC)*0.06)
@@ -101,7 +101,8 @@ void drive_task(void)
 
 	//DCMotorInit();
 	//DCMotor_Start(DRIVING_MOTOR);
-	DCMotor_SetSpeed(STEERING_MOTOR, 7);
+	DCMotor_SetSpeed(STEERING_MOTOR, 100);
+	BL_ReadAsync(&(CarInfo.DriverInput));
 
 	while(1)
 	{
@@ -127,14 +128,14 @@ void drive_task(void)
 			break;
 
 		case steer_right:
-			DCMotor_SetSpeed(STEERING_MOTOR, 75);
+			DCMotor_SetSpeed(STEERING_MOTOR, 100);
 			DCMotor_StartForward(STEERING_MOTOR);
 			//steer_counter++;
 			CarInfo.DriverInput=idle;
 			break;
 
 		case steer_left:
-			DCMotor_SetSpeed(STEERING_MOTOR, 75);
+			DCMotor_SetSpeed(STEERING_MOTOR, 100);
 			DCMotor_StartReverse(STEERING_MOTOR);
 			//steer_counter++;
 			CarInfo.DriverInput=idle;

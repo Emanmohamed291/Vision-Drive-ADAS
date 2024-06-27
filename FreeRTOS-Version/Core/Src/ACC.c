@@ -131,7 +131,7 @@ void CruiseControl_Task(void const * argument)
 				{
 					vTaskSuspend(Distance1_Measure);
 				}
-				if(Current_Speed>Max_Speed)
+				if(Current_Speed>Max_Speed && (Current_Speed>10))
 				{
 					//while(Current_Speed>(Max_Speed-1))
 					//{
@@ -146,7 +146,7 @@ void CruiseControl_Task(void const * argument)
 				{
 					vTaskResume(Distance1_Measure);
 				}
-				if(Distance_CH1<Min_Distance)
+				if((Distance_CH1<Min_Distance) && (Current_Speed>10))
 				{
 					//while((Distance_CH1<(Min_Distance+1))&&Current_Speed)
 					//{
